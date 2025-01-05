@@ -27,22 +27,43 @@ if [ ! -d "$DOTFILES_DIR" ]; then
     exit 1
 fi
 
-# Find all files/directories in the dotfiles repository
-find "$DOTFILES_DIR" -mindepth 1 -maxdepth 4 -not -path "*/.git*" -not -name "*.sh" -not -path "*/backup*" | while read -r file; do
-    # Get the relative path from dotfiles directory
-    relative_path="${file#$DOTFILES_DIR/}"
-    target="$HOME/$relative_path"
+# Function to create symlink with proper dot prefix
+create_symlink() {
+    local source="$1"
+    local target="$2"
 
     # Create parent directory if it doesn't exist
     mkdir -p "$(dirname "$target")"
 
     # Create symlink if it doesn't exist
     if [ ! -e "$target" ]; then
-        log_info "Creating symlink for $relative_path"
-        ln -s "$file" "$target"
+        log_info "Creating symlink: $target -> $source"
+        ln -s "$source" "$target"
     elif [ ! -L "$target" ]; then
         log_warning "File exists but is not a symlink: $target"
     fi
+}
+
+# Handle config directory
+if [ -d "$DOTFILES_DIR/config" ]; then
+    find "$DOTFILES_DIR/config" -mindepth 1 -maxdepth 1 | while read -r item; do
+        base_name=$(basename "$item")
+        create_symlink "$item" "$HOME/.config/$base_name"
+    done
+fi
+
+# Handle local directory
+if [ -d "$DOTFILES_DIR/local" ]; then
+    find "$DOTFILES_DIR/local" -mindepth 1 -maxdepth 2 | while read -r item; do
+        rel_path="${item#$DOTFILES_DIR/local/}"
+        create_symlink "$item" "$HOME/.local/$rel_path"
+    done
+fi
+
+# Handle other dotfiles
+find "$DOTFILES_DIR" -maxdepth 1 -type f -name ".*" | while read -r file; do
+    base_name=$(basename "$file")
+    create_symlink "$file" "$HOME/$base_name"
 done
 
 log_info "Deployment complete!"
