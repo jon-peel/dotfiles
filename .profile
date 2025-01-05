@@ -1,0 +1,11 @@
+EMACSBIN="$HOME/.config/emacs/bin"
+USERBIN="$HOME/.local/bin"
+JETBRAINS="$HOME/.local/share/JetBrains/Toolbox/scripts"
+FLUTTER="$HOME/Flutter/flutter/bin"
+export PATH="$PATH:$FLUTTER:$EMACSBIN:$USERBIN:$JETBRAINS"
+
+export GTK_THEME=Adwaita:dark
+
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm

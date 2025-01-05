@@ -1,0 +1,480 @@
+% Created 2024-06-28 Fri 20:27
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{Jonathan Peel}
+\date{\today}
+\title{Config.el}
+\hypersetup{
+ pdfauthor={Jonathan Peel},
+ pdftitle={Config.el},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.4 (Org mode 9.8)}, 
+ pdflang={English}}
+\usepackage{biblatex}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{General settings}
+\label{sec:org1090172}
+
+\begin{itemize}
+\item Setting user name and email address
+\end{itemize}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq user-full-name "Jonathan Peel"
+      user-mail-address "me@jonathanpeel.co.za")
+\end{minted}
+\subsection{PATH/ENV}
+\label{sec:org1d0b533}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setenv "PATH" (concat (getenv "PATH") ":/home/me/.local/bin"))
+\end{minted}
+\section{Font settings}
+\label{sec:org3426632}
+
+\begin{itemize}
+\item Setting up the primary font and a non-monospace font
+\end{itemize}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq
+      doom-font (font-spec :family "JetBrains Mono" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 16)
+      doom-serif-font (font-spec :family "Noto Serif")
+      doom-unicode-font (font-spec :family "JetBrains Mono" :size 16)
+      doom-big-font (font-spec :family "JetBrains Mono" :size 21)
+      )
+\end{minted}
+
+
+
+\begin{itemize}
+\item Use UTF 8
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+\end{minted}
+\end{itemize}
+\section{Visual settings}
+\label{sec:orgc136596}
+
+\subsection{Theme}
+\label{sec:org66edb66}
+
+\subsubsection{Custom Modus Theme Syntax}
+\label{sec:orgdf6f7cb}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq modus-themes-bold-constructs t
+      modus-themes-italic-constructs t
+      modus-themes-paren-match '(bold intense)
+      modus-themes-syntax '(green-strings))
+\end{minted}
+\subsubsection{Custom Modus Org Theme}
+\label{sec:orge3fe7d5}
+
+\begin{itemize}
+\item Color and style of header blocks
+\end{itemize}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq modus-themes-scale-headings t
+      modus-themes-headings
+      '((1 . (rainbow overline 1.4))
+        (2 . (rainbow 1.3))
+        (3 . (rainbow bold 1.2))
+        (t . (semilight 1.1))))
+\end{minted}
+
+\begin{itemize}
+\item Background color of source code blocks
+\end{itemize}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq modus-themes-org-blocks 'tinted-background)
+\end{minted}
+\subsubsection{Enable Modus Theme}
+\label{sec:org2e2a7c8}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq doom-theme 'modus-vivendi)
+\end{minted}
+\subsection{Org Block Faces}
+\label{sec:orgf2670d5}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(add-hook! 'org-mode-hook
+  (setq org-src-block-faces
+        (append org-src-block-faces
+                '(("plantuml" modus-themes-nuanced-yellow)
+                  ("json" modus-themes-nuanced-yellow)
+                  ("fsharp" modus-themes-nuanced-blue)
+                  ("csharp" modus-themes-nuanced-magenta)))))
+\end{minted}
+\subsection{Fill Column}
+\label{sec:org679ecbb}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+;; Set maximum line width to 120 characters
+(setq visual-fill-column-width 120
+      visual-fill-column-center-text t)
+(visual-fill-column-mode 1)
+(add-hook! 'org-mode-hook
+  (visual-fill-column-mode 1))
+
+\end{minted}
+\subsection{Full Screen}
+\label{sec:org8fd00a1}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+\end{minted}
+\section{Line numbers}
+\label{sec:org7d36e6f}
+
+\begin{itemize}
+\item Setting the style of line numbers
+\end{itemize}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq display-line-numbers-type t)
+\end{minted}
+\section{Org mode}
+\label{sec:orgcaccd11}
+
+\subsection{Setting the directory for org files}
+\label{sec:org369acba}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq org-directory "~/OneDrive/org/")
+\end{minted}
+\subsection{Start with indentation}
+\label{sec:orgd3cd4f1}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq org-startup-indented t
+      org-src-tab-acts-natively t)
+\end{minted}
+\subsection{Use visual pitch mode}
+\label{sec:orgab4f479}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(add-hook 'org-mode-hook
+          (lambda ()
+            (variable-pitch-mode 1)
+            visual-line-mode))
+\end{minted}
+\subsection{Pretty signals}
+\label{sec:org224d93a}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "†")
+                                       ("#+END_SRC" . "†")
+                                       ("#+begin_src" . "†")
+                                       ("#+end_src" . "†")
+                                       (">=" . "≥")
+                                       ("=>" . "⇨")))
+(setq prettify-symbols-unprettify-at-point 'right-edge)
+(add-hook 'org-mode-hook 'prettify-symbols-mode)
+\end{minted}
+\subsection{Fixed pitch font in src blocks}
+\label{sec:org0d06dcd}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(custom-theme-set-faces
+ 'user
+ '(org-block                 ((t (:inherit fixed-pitch))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-property-value        ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-tag                   ((t (:inherit (shadow fixed-pitch) :weight bold))))
+ '(org-verbatim              ((t (:inherit (shadow fixed-pitch))))))
+\end{minted}
+\subsection{Number org headers}
+\label{sec:org8f38366}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(use-package org-num
+  :load-path "lisp/"
+  :after org
+  :hook (org-mode . org-num-mode))
+\end{minted}
+\subsection{Org habit}
+\label{sec:orgea4dd6d}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(use-package! org-habit
+  :after org
+  :config
+  (setq org-habit-following-days 7
+        org-habit-preceding-days 35
+        org-habit-show-habits t))
+\end{minted}
+\subsection{Org header bullets}
+\label{sec:org9a8616e}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
+\end{minted}
+\subsection{Org Pretty Tag\hfill{}\textsc{TOPIC:CLR}}
+\label{sec:org7bbe47c}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(use-package org-pretty-tags
+  :demand t
+  :config
+   (setq org-pretty-tags-surrogate-strings
+         (quote
+          (("TOPIC" . "☆")
+           ("russian" . "🇷🇺")
+
+           ("CLR"   . "☀")
+           ("DZ"    . "🌦")
+           ("RA"    . "🌧")
+           ("TS"    . "⛈")
+           ("TSRA"  . "⛈")
+           ("SN"    . "🌨")
+           ("SCT"   . "🌤")
+           ("BKN"   . "🌤")
+           ("OVC"   . "☁")
+
+
+           ("@work"    . "⚒")
+           ("@study"   . "📚")
+           ("birthday" . "🎂")
+           ("rain"     . "🌧")
+           ("time"     . "⌚")
+           ("grat"     . "🤗")
+           ("lena"     . "👩‍❤️‍👩")
+           ("fp"       . "🤦🏻‍♂️")
+           ("train"    . "🚆")
+           ("mountain" . "⛰️")
+
+           ("security" . "🔥"))))
+   (org-pretty-tags-global-mode))
+\end{minted}
+\subsection{Org Roam}
+\label{sec:orge59c827}
+
+\subsubsection{Daily template}
+\label{sec:org9801569}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(after! org-roam
+  (setq org-roam-dailies-capture-templates
+      '(("d" "default" entry "\n\n* %<%H:%M>: %?"
+
+         :target (file+datetree "daily.org" "#+TITLE: Journal\n")))))
+\end{minted}
+\subsection{Org Capture}
+\label{sec:org2c9f8a7}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq org-capture-templates
+      '(("j" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
+         (file "~/.doom.d/temp/daily-journal.org"))
+
+        ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
+         "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
+         :empty-lines-before 2)
+
+        ("m" "Email Workflow")
+        ("mf" "Follow Up" entry (file+olp "~/OneDrive/org/mail.org" "Follow Up")
+         "* TODO Follow up with %:fromname on %a\nSCHEDULED:%t\n\n%i")
+        ("mr" "Read Later" entry (file+olp "~/OneDrive/org/mail.org" "Read Later")
+         "* TODO Read %a\nSCHEDULED:%t\n\n%i")))
+\end{minted}
+\section{RSS (elfeed)}
+\label{sec:org6d1d334}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(add-hook! 'elfeed-search-mode-hook #'elfeed-update)
+(add-hook! 'elfeed-search-mode-hook (elfeed-search-set-filter "+unread"))
+\end{minted}
+\section{Email (MU4E)}
+\label{sec:orgcc2ef0d}
+
+\subsection{Mail and Folders}
+\label{sec:org34022c7}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq mu4e-maildir "~/.mail")
+\end{minted}
+\subsubsection{Polymorphic}
+\label{sec:org56c4d8a}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(after! mu4e
+  (setq my-mu4e-context-poly
+        (make-mu4e-context
+         :name "Polymorphic"
+         :match-func (lambda (msg) (when msg (string-prefix "/poly" (mu4e-message-field msg :maildir))))
+         :vars '((mu4e-sent-folder       . "/Sent")
+                 (mu4e-drafts-folder     . "/Drafts")
+                 (mu4e-trash-folder      . "/Trash")
+                 (mu4e-refile-folder     . "")
+                 (smtpmail-smtp-user     . "jonathanp@polymorphic.group")
+                 (user-mail-address      . "jonathanp@polymorphic.group")
+                 (mu4e-compose-signature . "")))))
+\end{minted}
+\subsubsection{Context}
+\label{sec:orgcb86b14}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(after! mu4e
+  (setq mu4e-contexts (list my-mu4e-context-poly)))
+\end{minted}
+\subsection{Bookmarks}
+\label{sec:orgef75fa9}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(after! mu4e
+  (add-to-list 'mu4e-bookmarks
+               '(:name "INBOX" :key ?i :query "maildir:/INBOX")))
+\end{minted}
+\subsection{Get mail}
+\label{sec:orgd4081c2}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq
+  mu4e-get-mail-command "mbsync -a"    ;; or fetchmail, or ...
+  mu4e-update-interval (* 5 60)        ;; update every 5 minutes
+  mu4e-change-filenames-when-moving t) ;; avoid syncing issues with mbsync
+\end{minted}
+\subsection{Speed up indexing}
+\label{sec:org0d9be86}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(setq
+  mu4e-index-cleanup nil      ;; don't do a full cleanup check
+  mu4e-index-lazy-check t)    ;; don't consider up-to-date dirs
+\end{minted}
+\subsection{SMTP}
+\label{sec:org27d6a9a}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(after! mu4e
+  (setq sendmail-program (executable-find "msmtp")
+	send-mail-function #'smtpmail-send-it
+	message-sendmail-f-is-evil t
+	message-sendmail-extra-arguments '("--read-envelope-from")
+	message-send-mail-function #'message-send-mail-with-sendmail))
+\end{minted}
+\subsection{Background}
+\label{sec:org4e23cc5}
+
+Run mu4e in the background
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+;(after! mu4e
+;    :defer 20
+;    mu4e t)
+\end{minted}
+\section{Transparency}
+\label{sec:org094b5c6}
+
+\subsection{Setting up transparency for frames}
+\label{sec:orgd4ed7f1}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+  (set-frame-parameter (selected-frame) 'alpha '(90 . 75))
+  (add-to-list 'default-frame-alist '(alpha . (90 . 75)))
+\end{minted}
+\section{PlantUML}
+\label{sec:org5d9e1d0}
+
+\begin{itemize}
+\item Setting up the PlantUML jar path and the execution mode
+\end{itemize}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+  (setq org-plantuml-jar-path "/home/me/bin/plantuml.jar")
+  (setq org-plantuml-default-exec-mode 'executable)
+  (setq plantuml-default-exec-mode 'executable)
+\end{minted}
+\section{\LaTeX{}}
+\label{sec:org82af178}
+
+\subsection{Quote blocks}
+\label{sec:orgb2169b1}
+
+export a quote block as \texttt{\textbackslash{}begin\{fancyquotes\}}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(defun org-latex-quote-block (quote-block contents info)
+  "Transcode a QUOTE-BLOCK element from Org to LaTeX.
+    CONTENTS holds the contents of the block.  INFO is a plist
+    holding contextual information."
+  (org-latex--wrap-label
+   quote-block
+   (format "\\begin{shaded*}\\begin{quote}\n%s\\end{quote}\\end{shaded*}" contents) info))
+
+;(org-export-define-derived-backend 'my-latex 'latex
+;  :translate-alist '((quote-block . my-org-latex-quote-block)))
+\end{minted}
+\subsection{Setting up the \LaTeX{} package for code highlighting}
+\label{sec:orgaa4d809}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+  (setq org-latex-listings 'minted)
+  (setq org-latex-packages-alist '(("" "minted")))
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (setq org-latex-minted-options
+        '(("frame" "leftline")
+          ("framesep" "2mm")))
+\end{minted}
+\section{OTH}
+\label{sec:org20ad064}
+
+\section{LSP}
+\label{sec:orgd9ff9aa}
+
+Custom language server modes
+\subsection{astro-mode}
+\label{sec:orgadf500b}
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(define-derived-mode astro-mode web-mode "astro")
+(setq auto-mode-alist
+      (append '((".*\\.astro\\'" . astro-mode))
+              auto-mode-alist))
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(astro-mode . "astro"))
+
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("astro-ls" "--stdio"))
+                    :activation-fn (lsp-activate-on "astro")
+                    :server-id 'astro-ls)))
+\end{minted}
+\section{Snippets}
+\label{sec:org2b6d2a7}
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(after! yasnippet
+  (setq yas-snippet-dirs '("~/.doom.d/snippets")))
+\end{minted}
+\section{Prolog}
+\label{sec:orgb3f40fd}
+
+Enable prolog for .pl files
+
+\begin{minted}[frame=leftline,framesep=2mm]{common-lisp}
+(add-to-list 'auto-mode-alist '("\\.pl$" . prolog-mode))
+(setq prolog-electric-if-then-else-flag t)
+
+; Org-Babel Support
+(setq org-babel-prolog-command "swipl")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((prolog . t)))
+\end{minted}
+\end{document}

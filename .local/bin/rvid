@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# Set the directory to start searching from
+start_dir="/media"
+
+# Set the file extensions for video files
+file_ext=".mp4 .mkv .avi .flv"
+
+
+mp4Files=$(find $start_dir -type f -name "*mp4" -print)
+mkvFiles=$(find $start_dir -type f -name "*mkv" -print)
+aviFiles=$(find $start_dir -type f -name "*avi" -print)
+flvFiles=$(find $start_dir -type f -name "*flv" -print)
+
+files=$mp4Files" "$mkvFiles" "$aviFiles" "$flvFiles 
+echo "files"
+#echo $files
+
+
+
+#" "$mkvFiles" "$aviFiles" "$flvFiles
+
+# Initialize number of files to show to 3
+num_files_to_show=3
+
+# Iterate over all additional command line arguments
+while [ $# -gt 0 ]; do
+    # Check if the current argument is a number
+    if [[ $1 =~ ^[0-9]+$ ]]; then
+        # If it is, set the number of files to show to that number
+        num_files_to_show=$1
+        break
+    fi
+    # Check if the current argument is present in the file path
+    if ! echo "$files" | grep -q "$1"; then
+        # If not, move on to the next argument
+        shift
+        continue
+    fi
+    # otherwise filter the files
+    files=$(echo "$files" | grep "$1")
+    # Shift left to next argument
+    shift
+done
+# Show a random selection of the specified number of files
+random_files=$(shuf -n $num_files_to_show <<< "$files")
+
+# Print the filenames to the screen
+echo "Selected files:"
+echo "$random_files"
+
+# Create a VLC playlist
+playlist_file="vlc-playlist.m3u"
+echo "#EXTM3U" > $playlist_file
+while read file; do
+  echo "#EXTINF:-1,$file" >> $playlist_file
+  echo "$file" >> $playlist_file
+done <<< "$random_files"
+
+# Open VLC with the playlist
+vlc -f $playlist_file >/dev/null 2>&1 &
+#flatpak run org.videolan.VLC -f $playlist_file >/dev/null 2>&1 &

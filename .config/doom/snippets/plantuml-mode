@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: PlantUML diagram
+# key: plantuml
+# --
+
+@startuml
+${1:Diagram contents}
+@enduml

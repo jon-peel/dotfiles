@@ -1,0 +1,708 @@
+#+TITLE: Config.el
+#+AUTHOR: Jonathan Peel
+#+STARTUP: overview
+
+* General settings
+
+- Setting user name and email address
+#+begin_src emacs-lisp :tangle yes
+(setq user-full-name "Jonathan Peel"
+      user-mail-address "me@jonathanpeel.co.za")
+#+end_src
+
+** PATH/ENV
+
+#+begin_src emacs-lisp :tangle yes
+(setenv "PATH" (concat (getenv "PATH") ":/home/me/.local/bin"))
+#+end_src
+
+
+* Font settings
+
+- Setting up the primary font and a non-monospace font
+#+begin_src emacs-lisp :tangle yes
+(setq
+      doom-font (font-spec :family "Komiki Mono" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 16)
+      doom-serif-font (font-spec :family "Noto Serif")
+      doom-unicode-font (font-spec :family "Noto Serif" :size 16)
+      doom-big-font (font-spec :family "Komiki Mono" :size 21))
+#+end_src
+
+- Use UTF 8
+
+ #+begin_src emacs-lisp :tangle yes
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+ #+end_src
+
+
+* Visual settings
+
+** Theme
+
+#+begin_src emacs-lisp :tangle yes
+;;(setq doom-theme 'doom-old-hope)
+#+end_src
+
+*** Automatic Theme Switching
+Based on GTK theme
+
+#+begin_src emacs-lisp :tangle yes
+(defun my/system-dark-mode-p ()
+  (string-match-p
+   "dark"
+   (shell-command-to-string
+    "gsettings get org.gnome.desktop.interface color-scheme")))
+
+(defun my/apply-theme ()
+  (if (my/system-dark-mode-p)
+      (load-theme 'doom-monokai-ristretto t)
+      (load-theme 'doom-flatwhite t)))
+
+;; Run when emacs starts
+(my/apply-theme)
+
+;; Set up a timer to check periodically
+(run-with-timer 0 5 #'my/apply-theme)
+#+end_src
+
+#+RESULTS:
+: [nil 26485 4563 684996 5 my/apply-theme nil nil 177000 nil]
+
+** Org Block Faces
+
+#+begin_src emacs-lisp :tangle yes
+(add-hook! 'org-mode-hook
+  (setq org-src-block-faces
+        (append org-src-block-faces
+                '(("plantuml" modus-themes-nuanced-yellow)
+                  ("json" modus-themes-nuanced-yellow)
+                  ("fsharp" modus-themes-nuanced-blue)
+                  ("csharp" modus-themes-nuanced-magenta)))))
+#+end_src
+
+
+** Fill Column
+#+begin_src emacs-lisp :tangle yes
+;; Set maximum line width to 120 characters
+(setq visual-fill-column-width 120
+      visual-fill-column-center-text t)
+(visual-fill-column-mode 1)
+(add-hook! 'org-mode-hook
+  (visual-fill-column-mode 1))
+
+#+end_src
+
+
+** Full Screen
+
+ #+begin_src emacs-lisp :tangle no
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+ #+end_src
+
+
+* Line numbers
+
+- Setting the style of line numbers
+#+begin_src emacs-lisp :tangle yes
+(setq display-line-numbers-type t)
+#+end_src
+
+
+* Org mode
+
+** Setting the directory for org files
+#+begin_src emacs-lisp :tangle yes
+(setq org-directory "~/OneDrive/org/")
+#+end_src
+
+** Start with indentation
+#+begin_src emacs-lisp :tangle yes
+(setq org-startup-indented t
+      org-src-tab-acts-natively t)
+#+end_src
+
+** Use visual pitch mode
+#+begin_src emacs-lisp :tangle no
+(add-hook 'org-mode-hook
+          (lambda ()
+            (variable-pitch-mode 1)
+            visual-line-mode))
+#+end_src
+
+** Pretty signals
+#+begin_src emacs-lisp :tangle yes
+(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "†")
+                                       ("#+END_SRC" . "†")
+                                       ("#+begin_src" . "†")
+                                       ("#+end_src" . "†")
+                                       (">=" . "≥")
+                                       ("=>" . "⇨")))
+(setq prettify-symbols-unprettify-at-point 'right-edge)
+(add-hook 'org-mode-hook 'prettify-symbols-mode)
+#+end_src
+
+** Fixed pitch font in src blocks
+#+begin_src emacs-lisp :tangle yes
+(custom-theme-set-faces
+ 'user
+ '(org-block                 ((t (:inherit fixed-pitch))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-property-value        ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-tag                   ((t (:inherit (shadow fixed-pitch) :weight bold))))
+ '(org-verbatim              ((t (:inherit (shadow fixed-pitch))))))
+#+end_src
+
+** Number org headers
+#+begin_src emacs-lisp :tangle yes
+;(use-package org-num
+;  :load-path "lisp/"
+;  :after org
+;  :hook (org-mode . org-num-mode))
+#+end_src
+
+** Org Agenda
+
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-files
+      (seq-filter (lambda (file)
+                   (and (string-match "\\.org$" file)
+                       (not (string-match "archive" file))
+                       (not (string-match "index-old" file))
+                       (not (string-match "tmp" file))))
+                 (directory-files-recursively org-directory "\\.")))
+#+end_src
+
+
+** Org habit
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! org-habit
+  :after org
+  :config
+  (setq org-habit-following-days 7
+        org-habit-preceding-days 35
+        org-habit-show-habits t))
+#+end_src
+
+** Org header bullets
+
+#+begin_src emacs-lisp :tangle yes
+(setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
+#+end_src
+
+** Org Pretty Tag :TOPIC:CLR:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-pretty-tags
+  :demand t
+  :config
+   (setq org-pretty-tags-surrogate-strings
+         (quote
+          (("TOPIC" . "☆")
+           ("russian" . "🇷🇺")
+
+           ("CLR"   . "☀")
+           ("DZ"    . "🌦")
+           ("RA"    . "🌧")
+           ("TS"    . "⛈")
+           ("TSRA"  . "⛈")
+           ("SN"    . "🌨")
+           ("SCT"   . "🌤")
+           ("BKN"   . "🌤")
+           ("OVC"   . "☁")
+
+
+           ("@work"    . "⚒")
+           ("@study"   . "📚")
+           ("birthday" . "🎂")
+           ("rain"     . "🌧")
+           ("time"     . "⌚")
+           ("grat"     . "🤗")
+           ("lena"     . "👩‍❤️‍👩")
+           ("fp"       . "🤦🏻‍♂️")
+           ("train"    . "🚆")
+           ("mountain" . "⛰️")
+
+           ("security" . "🔥"))))
+   (org-pretty-tags-global-mode))
+#+end_src
+
+#+RESULTS:
+: t
+
+** Org Roam
+
+*** Daily template
+
+#+begin_src emacs-lisp :tangle yes
+(after! org-roam
+  (setq org-roam-dailies-capture-templates
+      '(("j" "Journal" entry "\n\n* Entry - %<%H:%M> \n%U\n\n%?"
+         :target (file+datetree "daily.org" "#+TITLE: Journal\n"))
+
+        ("g" "Goals" entry "* [ ] Goals - %<%d %B %Y> [/]\nSCHEDULED: %t\n** [ ] %?"
+         :target (file+datetree "daily.org" "#+TITLE: Journal\n"))
+
+                )))
+#+end_src
+
+
+** Org Capture
+
+#+begin_src emacs-lisp :tangle yes
+(setq org-capture-templates
+      '(
+        ;; ("j" "Journal")
+        ;; ("jj" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
+        ;;  "\n\n* %U\n%?")
+        ;; ("jt" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
+        ;;  "* [ ] %?\nSCHEDULED: %t")
+
+
+        ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
+         "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
+         :empty-lines-before 2)
+
+        ("m" "Email Workflow")
+        ("mf" "Follow Up" entry (file+olp "~/OneDrive/org/mail.org" "Follow Up")
+         "* TODO Follow up with %:fromname on %a\nSCHEDULED:%t\n\n%i")
+        ("mr" "Read Later" entry (file+olp "~/OneDrive/org/mail.org" "Read Later")
+         "* TODO Read %a\nSCHEDULED:%t\n\n%i")
+
+      ("s" "Sleep Entry" table-line
+         (file+headline "sleep.org" "Data")
+         "|#|%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
+         :immediate-finish t :jump-to-captured t
+         )))
+#+end_src
+
+#+RESULTS:
+| j  | Journal |       |                                            |
+| jj | journal | entry | (file+datetree ~/OneDrive/org/journal.org) |
+
+
+
+
+* RSS (elfeed)
+
+#+begin_src emacs-lisp :tangle yes
+(add-hook! 'elfeed-search-mode-hook #'elfeed-update)
+(add-hook! 'elfeed-search-mode-hook (elfeed-search-set-filter "+unread"))
+(after! elfeed
+  (setq elfeed-show-entry-switch 'display-buffer)
+  (setq elfeed-search-remain-on-entry t))
+#+end_src
+
+
+* Email (MU4E)
+** MU Initialisation
+
+mu needs to be initilised with the following two commands from the terminal:
+
+mu init --maildir=~/.mail \
+    --my-address=me@jonathanpeel.co.za \
+    --my-address=jonathanp@polymorphic.group \
+    --my-address=jonathanp@commstack.co.uk
+
+mu index
+
+** basic MU4E settings
+
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes
+(setq
+  mu4e-get-mail-command "mbsync -a"    ;; or fetchmail, or ...
+  mu4e-update-interval (* 5 60))        ;; update every 5 minutes
+#+end_src
+
+This is set to ~t~ to avoid mail syncing issues when using mbsync.
+#+begin_src emacs-lisp :tangle yes
+(setq mu4e-change-filenames-when-moving t)
+#+end_src
+
+** Mail and Folders
+
+#+begin_src emacs-lisp :tangle yes
+(setq mu4e-maildir "~/.mail")
+(setq mu4e-root-maildir "~/.mail")
+#+end_src
+
+** MU4E Contexts
+*** Polymorphic
+
+#+begin_src emacs-lisp :tangle yes
+(after! mu4e
+  (setq my-mu4e-context-poly
+        (make-mu4e-context
+         :name "Polymorphic"
+         :enter-func (lambda () (mu4e-message "Enter Polymorphic context"))
+         :leave-func (lambda () (mu4e-message "Leave Polymorphic context"))
+         :match-func (lambda (msg) (when msg (string-prefix-p "/poly" (mu4e-message-field msg :maildir))))
+         :vars '((mu4e-sent-folder       . "/poly/Sent")
+                 (mu4e-drafts-folder     . "/poly/Drafts")
+                 (mu4e-trash-folder      . "/poly/Trash")
+                 (mu4e-refile-folder     . "/poly/Archive")
+                 (mu4e-get-mail-command  . "mbsync polymorphic")
+                 (smtpmail-smtp-user     . "jonathanp@polymorphic.group")
+                 (user-mail-address      . "jonathanp@polymorphic.group")
+                 (user-full-name         . "Jonathan Peel")
+                 (mu4e-bookmarks         .
+                        ((:name "INBOX (Polymorphic)" :query "maildir:/poly/INBOX" :key ?i)
+                         (:name "Unread messages"
+                          :query "maildir:/poly/* AND flag:unread AND NOT flag:trashed" :key 117)
+                         (:name "Today's messages"
+                          :query "maildir:/poly/* AND date:today..now" :key 116)
+                         (:name "Last 7 days"
+                          :query "maildir:/poly/* AND date:7d..now" :hide-unread t :key 119)
+                         (:name "Messages with images"
+                          :query "maildir:/poly/* AND mime:image/*" :key 112)))
+                 (mu4e-compose-signature . "")))))
+#+end_src
+
+*** CommStack
+
+#+begin_src emacs-lisp :tangle yes
+(after! mu4e
+  (setq my-mu4e-context-comm
+        (make-mu4e-context
+         :name "CommStack"
+         :enter-func (lambda () (mu4e-message "Enter jonathanp@commstack.co.uk context"))
+         :leave-func (lambda () (mu4e-message "Leave jonathanp@commstack.co.uk context"))
+         :match-func (lambda (msg) (when msg (string-prefix-p "/comm" (mu4e-message-field msg :maildir))))
+         :vars '((mu4e-sent-folder       . "/comm/Sent")
+                 (mu4e-drafts-folder     . "/comm/Drafts")
+                 (mu4e-trash-folder      . "/comm/Trash")
+                 (mu4e-refile-folder     . "/comm/Archive")
+                 (mu4e-get-mail-command  . "mbsync commstack")
+                 (smtpmail-smtp-user     . "jonathanp@commstack.co.uk")
+                 (user-mail-address      . "jonathanp@commstack.co.uk")
+                 (user-full-name         . "Jonathan Peel")
+                 (mu4e-bookmarks         .
+                        ((:name "INBOX (CommStack)" :query "maildir:/comm/INBOX" :key ?i)
+                         (:name "Unread messages"
+                          :query "maildir:/comm/* AND flag:unread AND NOT flag:trashed" :key 117)
+                         (:name "Today's messages"
+                          :query "maildir:/comm/* AND date:today..now" :key 116)
+                         (:name "Last 7 days"
+                          :query "maildir:/comm/* AND date:7d..now" :hide-unread t :key 119)
+                         (:name "Messages with images"
+                          :query "maildir:/comm/* AND mime:image/*" :key 112)))
+                 (mu4e-compose-signature . "")))))
+#+end_src
+
+*** Jonathan Peel
+
+#+begin_src emacs-lisp :tangle yes
+(after! mu4e
+  (setq my-mu4e-context-jp
+        (make-mu4e-context
+         :name "Jonathan Peel"
+         :enter-func (lambda () (mu4e-message "Enter me@jonathanpeel.co.za context"))
+         :leave-func (lambda () (mu4e-message "Leave me@jonathanpeel.co.za context"))
+         :match-func (lambda (msg) (when msg (string-prefix-p "/comm" (mu4e-message-field msg :maildir))))
+         :vars '((mu4e-sent-folder       . "/jp/[Gmail]/Sent Mail")
+                 (mu4e-drafts-folder     . "/jp/[Gmail]/Drafts")
+                 (mu4e-trash-folder      . "/jp/[Gmail]/Bin")
+                 (mu4e-refile-folder     . "/jp/[Gmail]/All Mail")
+                 (mu4e-get-mail-command  . "mbsync jonathanpeel")
+                 (smtpmail-smtp-user     . "me@jonathanpeel.co.za")
+                 (user-mail-address      . "me@jonathanpeel.co.za")
+                 (user-full-name         . "Jonathan Peel")
+                 (mu4e-bookmarks         .
+                        ((:name "INBOX" :query "maildir:/jp/INBOX" :key ?i)
+                         (:name "Unread messages"
+                          :query "maildir:/jp/* AND flag:unread AND NOT flag:trashed" :key 117)
+                         (:name "Today's messages"
+                          :query "maildir:/jp/* AND date:today..now" :key 116)
+                         (:name "Last 7 days"
+                          :query "maildir:/jp/* AND date:7d..now" :hide-unread t :key 119)
+                         (:name "Messages with images"
+                          :query "maildir:/jp/* AND mime:image/*" :key 112)))
+                 (mu4e-compose-signature . "")))))
+#+end_src
+
+*** MU4E Context List
+
+#+begin_src emacs-lisp :tangle yes
+(after! mu4e
+  (setq mu4e-contexts (list my-mu4e-context-poly
+                            my-mu4e-context-comm
+                            my-mu4e-context-jp)))
+#+end_src
+
+** Bookmarks
+
+#+begin_src emacs-lisp :tangle yes
+;(after! mu4e
+;  (setq mu4e-bookmarks
+;        (append
+;         '((:name "INBOX (Work)" :query "maildir:/poly/INBOX OR maildir:/comm/INBOX" :key ?i)
+;           (:name "INBOX (Pers)" :query "maildir:/jp/INBOX" :key ?g)
+;           )
+;         mu4e-bookmarks)))
+#+end_src
+
+** SMTP
+
+Use ~msmtp~ instead of the built in Emacs SMTP cliet.
+
+#+begin_src emacs-lisp :tangle yes
+(after! mu4e
+  (setq sendmail-program (executable-find "msmtp")
+	send-mail-function #'smtpmail-send-it
+	message-sendmail-f-is-evil t
+	message-sendmail-extra-arguments '("--read-envelope-from")
+	message-send-mail-function #'message-send-mail-with-sendmail))
+#+end_src
+
+** Background
+
+Run mu4e in the background
+
+#+begin_src emacs-lisp :tangle yes
+;(after! mu4e
+;    :defer 20
+;    mu4e t)
+#+end_src
+
+
+* Calendar
+
+** Calendar Settigs
+
+#+begin_src emacs-lisp :tangle yes
+;(after! org-gcal
+;  (setq org-gcal-client-id "jonathanp@polymorphic.group"
+;        org-gcal-client-secret "your-client-secret"
+;        org-gcal-fetch-file-alist '(("jonathanp@polymorphic.group" . "~/OneDrive/org/calendar.org"))))
+#+end_src
+
+** Configure caldav sync
+#+begin_src emacs-lisp :tangle yes
+;(use-package! org-caldav
+;  :config
+;  (setq org-caldav-url "http://localhost:1080/users/jonathanp@polymorphic.group/calendar"
+;        org-caldav-calendar-id "Calendar"
+;        org-caldav-inbox "~/OneDrive/org/calendar.org"
+;        org-caldav-files '("~/OneDrive/org/calendar.org")
+;        org-caldav-sync-direction 'twoway
+;        org-caldav-delete-calendar-entries 'ask
+;        org-caldav-resume-aborted-sync t))
+#+end_src
+
+
+* Transparency
+
+** Setting up transparency for frames
+#+begin_src emacs-lisp :tangle no
+  (set-frame-parameter (selected-frame) 'alpha '(90 . 75))
+  (add-to-list 'default-frame-alist '(alpha . (90 . 75)))
+#+end_src
+
+
+
+
+* PlantUML
+
+- Setting up the PlantUML jar path and the execution mode
+#+begin_src emacs-lisp :tangle yes
+  (setq org-plantuml-jar-path "/home/me/bin/plantuml.jar")
+  (setq org-plantuml-default-exec-mode 'executable)
+  (setq plantuml-default-exec-mode 'executable)
+#+end_src
+
+
+* LaTeX
+
+** Quote blocks
+
+export a quote block as ~\begin{fancyquotes}~
+
+#+begin_src emacs-lisp :tangle yes
+(defun org-latex-quote-block (quote-block contents info)
+  "Transcode a QUOTE-BLOCK element from Org to LaTeX.
+    CONTENTS holds the contents of the block.  INFO is a plist
+    holding contextual information."
+  (org-latex--wrap-label
+   quote-block
+   (format "\\begin{shaded*}\\begin{quote}\n%s\\end{quote}\\end{shaded*}" contents) info))
+
+;(org-export-define-derived-backend 'my-latex 'latex
+;  :translate-alist '((quote-block . my-org-latex-quote-block)))
+#+end_src
+
+
+
+
+**  Setting up the LaTeX package for code highlighting
+#+begin_src emacs-lisp :tangle yes
+  (setq org-latex-listings 'minted)
+  (setq org-latex-packages-alist '(("" "minted")))
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (setq org-latex-minted-options
+        '(("frame" "leftline")
+          ("framesep" "2mm")))
+#+end_src
+
+
+* OTH
+
+
+* ESS (R)
+
+#+begin_src emacs-lisp :tangle yes
+(after! ess
+  (setq ess-style 'RStudio
+        ess-eval-visibly 'nowait
+        ess-use-flymake nil)  ; Use flycheck instead
+
+  ;; Enable rainbow delimiters in R scripts
+  (add-hook! 'ess-r-mode-hook #'rainbow-delimiters-mode)
+
+  ;; Enable line numbers in R scripts
+  (add-hook! 'ess-r-mode-hook #'display-line-numbers-mode)
+
+  ;; Auto-completion settings
+  (setq ess-use-company t
+        company-R-args t
+        company-R-objects t))
+#+end_src
+
+
+* LSP
+
+Custom language server modes
+
+#+begin_src emacs-lisp :tangle yes
+(after! lsp-mode
+  (setq lsp-r-server-path "R"
+        lsp-r-lsp-server 'languageserver))
+#+end_src
+
+** astro-mode
+#+begin_src emacs-lisp :tangle yes
+(define-derived-mode astro-mode web-mode "astro")
+(setq auto-mode-alist
+      (append '((".*\\.astro\\'" . astro-mode))
+              auto-mode-alist))
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(astro-mode . "astro"))
+
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("astro-ls" "--stdio"))
+                    :activation-fn (lsp-activate-on "astro")
+                    :server-id 'astro-ls)))
+#+end_src
+
+
+* Typescript
+
+#+begin_src emacs-lisp :tangle yes
+(after! org
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((typescript . t))))
+
+;(use-package! ob-typescript
+;  :after org
+;  :config
+;  ;; Use tsx instead of ts-node
+;  (setq org-babel-typescript-command "tsx"))
+#+end_src
+
+
+* .Net
+#+begin_src emacs-lisp :tangle yes
+(org-babel-do-load-languages 'org-babel-load-languages '((csharp . t)))
+#+end_src
+
+** F#
+
+#+begin_src emacs-lisp :tangle yes
+(after! fsharp-mode
+  (setq fsharp-ac-use-popup nil)  ; Use display-buffer instead of pop-up
+  (setq lsp-fsharp-server-runtime 'net-core)  ; Use .NET Core runtime
+
+  ;; Optional: Configure formatting
+  (setq-hook! 'fsharp-mode-hook
+    tab-width 4
+    indent-tabs-mode nil))
+
+;; Optional: Add key bindings
+(map! :map fsharp-mode-map
+      :localleader
+      "b" #'fsharp-load-buffer-file    ; Load current buffer
+      "e" #'fsharp-eval-region         ; Evaluate region
+      "i" #'fsharp-ac-load-project     ; Load project
+      "p" #'fsharp-ac-start-process)   ; Start F# process
+#+end_src
+
+
+* Snippets
+
+#+begin_src emacs-lisp :tangle yes
+(after! yasnippet
+  (setq yas-snippet-dirs '("~/.doom.d/snippets")))
+#+end_src
+
+
+* Prolog
+
+Enable prolog for .pl files
+
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.pl$" . prolog-mode))
+(setq prolog-electric-if-then-else-flag t)
+
+; Org-Babel Support
+(setq org-babel-prolog-command "swipl")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((prolog . t)))
+#+end_src
+
+
+* COMMENT Emacs Application Framework
+
+#+begin_src emacs-lisp :tangle no
+(add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
+(require 'eaf)
+(require 'eaf-markmap)
+(require 'eaf-browser)
+(require 'eaf-airshare)
+(require 'eaf-org-previewer)
+(require 'eaf-rss-reader)
+(require 'eaf-camera)
+; (require 'eaf-vue-tailwindcss)
+(require 'eaf-image-viewer)
+(require 'eaf-markdown-previewer)
+(require 'eaf-file-browser)
+(require 'eaf-video-player)
+(require 'eaf-mindmap)
+(require 'eaf-git)
+(require 'eaf-file-manager)
+(require 'eaf-demo)
+(require 'eaf-system-monitor)
+(require 'eaf-2048)
+(require 'eaf-pdf-viewer)
+; (require 'eaf-jupyter)
+(require 'eaf-terminal)
+(require 'eaf-music-player)
+; (require 'eaf-netease-cloud-music)
+; (require 'eaf-vue-demo)
+(require 'eaf-file-sender)
+(require 'eaf-map)
+#+end_src

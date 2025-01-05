@@ -1,0 +1,40 @@
+#!/bin/bash
+set -euo pipefail
+
+THRESHOLD=10  # GB threshold
+COUNT=0  # Initialize counter at 0
+RUN=$(printf "%04x" $(($RANDOM % 65536)))
+
+function create_file() {
+    local FILE=$1
+    local SIZE=$2
+    echo "Creating $FILE with $SIZE GB"
+    dd if=/dev/zero of=$FILE bs=1M count=$((SIZE*1024))
+    sync
+}
+
+function shred_file() {
+    local FILE=$1
+    shred --verbose --random-source=/dev/urandom --zero $FILE
+    sync
+}
+    
+while true; do
+    COUNT=$((COUNT+1))
+    available_space=$(df $PWD | awk 'NR==2 {printf "%.0f\n", $4/1024/1024}')
+    echo "Available -> $available_space"
+    if [ "$available_space" -gt "$THRESHOLD" ]; then
+	FILE="zero.$RUN.$COUNT"
+	create_file $FILE $THRESHOLD
+        shred_file $FILE
+    else
+        break
+    fi
+done
+
+cat /dev/zero > "zero.$RUN.0" || echo "Space used"
+sync
+rm zero.$RUN.1 || echo "No First File"
+shred_file "zero.$RUN.0"
+rm zero.file.*
+

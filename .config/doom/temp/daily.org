@@ -1,0 +1,9 @@
+#+title: %<%Y-%m-%d>
+
+* Tasks
+
+* Journal
+
+* Work
+
+** File Temp

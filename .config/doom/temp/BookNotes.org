@@ -1,0 +1,11 @@
+* It worked
+
+* Source
+
+Author: %^{Author}
+Title: ${title}
+Year: %^{Year}
+
+* Summary
+
+%?
