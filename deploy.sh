@@ -60,10 +60,12 @@ if [ -d "$DOTFILES_DIR/local" ]; then
     done
 fi
 
-# Handle other dotfiles
-find "$DOTFILES_DIR" -maxdepth 1 -type f -name ".*" | while read -r file; do
-    base_name=$(basename "$file")
-    create_symlink "$file" "$HOME/$base_name"
-done
+# Handle home directory files
+if [ -d "$DOTFILES_DIR/home" ]; then
+    find "$DOTFILES_DIR/home" -type f | while read -r file; do
+        base_name=$(basename "$file")
+        create_symlink "$file" "$HOME/.$base_name"
+    done
+fi
 
 log_info "Deployment complete!"
