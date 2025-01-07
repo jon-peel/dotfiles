@@ -178,7 +178,6 @@ Based on GTK theme
                  (directory-files-recursively org-directory "\\.")))
 #+end_src
 
-
 ** Org habit
 
 #+begin_src emacs-lisp :tangle yes
@@ -251,7 +250,6 @@ Based on GTK theme
 
                 )))
 #+end_src
-
 
 ** Org Capture
 

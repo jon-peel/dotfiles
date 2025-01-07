@@ -1,0 +1,118 @@
+* {
+    font-family: "Komiki Mono", sans-serif;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #FFF1F3;
+    color: #1C1A1A;
+}
+
+/* Common module styles */
+#workspaces,
+#window,
+#clock,
+#network,
+#battery,
+#pulseaudio,
+#backlight,
+#tray {
+    padding: 0 10px;
+    margin: 3px 2px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+/* Workspaces */
+#workspaces button {
+    padding: 0 5px;
+    color: #69676C;
+    transition: all 0.3s ease;
+}
+
+#workspaces button.active {
+    color: #1C1A1A;
+    background: rgba(253, 147, 83, 0.15);
+}
+
+#workspaces button:hover {
+    color: #1C1A1A;
+    background: rgba(90, 212, 230, 0.15);
+    border: none;
+    box-shadow: none;
+}
+
+/* Window title */
+#window {
+    color: #4B4571;
+}
+
+/* Clock modules */
+#clock.time {
+    color: #3C8F52;
+    font-weight: bold;
+}
+
+#clock.date {
+    color: #2B899E;
+    font-weight: bold;
+}
+
+/* Network */
+#network {
+    color: #2D6A73;
+}
+
+#network.disconnected {
+    color: #FC618D;
+}
+
+/* Battery */
+#battery {
+    color: #3E6C47;
+}
+
+#battery.warning {
+    color: #7E492A;
+}
+
+#battery.critical {
+    color: #FC618D;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    to {
+        background: #FC618D;
+        color: #FFF1F3;
+    }
+}
+
+/* Volume */
+#pulseaudio {
+    color: #4B4571;
+}
+
+#pulseaudio.muted {
+    color: #69676C;
+}
+
+/* Backlight */
+#backlight {
+    color: #7E492A;
+}
+
+/* System tray */
+#tray {
+    margin-right: 8px;
+}
+
+tooltip {
+    background: #FFF1F3;
+    border: 1px solid #69676C;
+}
+
+tooltip label {
+    color: #1C1A1A;
+}
