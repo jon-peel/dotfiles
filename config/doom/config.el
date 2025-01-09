@@ -268,13 +268,26 @@
                             my-mu4e-context-comm
                             my-mu4e-context-jp)))
 
-;(after! mu4e
-;  (setq mu4e-bookmarks
-;        (append
-;         '((:name "INBOX (Work)" :query "maildir:/poly/INBOX OR maildir:/comm/INBOX" :key ?i)
-;           (:name "INBOX (Pers)" :query "maildir:/jp/INBOX" :key ?g)
-;           )
-;         mu4e-bookmarks)))
+(setq mu4e-maildir-shortcuts
+  '((:maildir "/comm/Inbox" :key ?c :name "CommStack")
+    (:maildir "/poly/Inbox" :key ?p :name "Polymorphic")
+    (:maildir "/jp/Inbox" :key ?j :name "Jonathan")))
+
+;(define-key mu4e-main-mode-map (kbd "U")
+;  (lambda ()
+;    (interactive)
+;    (message "Syncing mail...")
+;    (let ((process (async-shell-command "mbsync -aV")))
+;      (set-process-sentinel
+;       process
+;       (lambda (proc event)
+;         (when (string= event "finished\n")
+;           (if (= 0 (process-exit-status proc))
+;               (progn
+;                 (kill-buffer (process-buffer proc))
+;                 (delete-window (get-buffer-window (process-buffer proc)))
+;                 (message "Mail sync completed successfully"))
+;             (message "Mail sync finished with errors"))))))))
 
 (after! mu4e
   (setq sendmail-program (executable-find "msmtp")

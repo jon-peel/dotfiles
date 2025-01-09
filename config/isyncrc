@@ -55,7 +55,7 @@ IMAPAccount JonathanPeel
 Host imap.gmail.com
 # Port 1143
 User me@jonathanpeel.co.za
-Pass ckssrsbkbjmoyvri
+PassCmd "pass email/jp"
 TLSType IMAPS
 AuthMechs Login
 
