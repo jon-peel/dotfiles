@@ -148,6 +148,15 @@
         ;; ("jt" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
         ;;  "* [ ] %?\nSCHEDULED: %t")
 
+        ("j" "Journal")
+        ("jj" "Journal" entry
+         (file+olp+datetree "journal.org" "Journal")
+         "* Entry - %<%H:%M>\n%U\n\n%?"
+         :empty-lines 1)
+        ("jg" "Goals" entry
+         (file+olp+datetree "journal.org" "Journal")
+         "* TODO Goals - %<%d %B %Y> [/]\nSCHEDULED: %t\n** [ ] %?"
+         :prepend t)
 
         ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
          "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
@@ -163,7 +172,17 @@
          (file+headline "sleep.org" "Data")
          "|#|%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
          :immediate-finish t :jump-to-captured t
-         )))
+         )
+
+        ("t" "Task" entry
+         (file+headline "tasks.org" "Tasks")
+         "** TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)
+
+        ("T" "Task with Deadline" entry
+         (file+headline "tasks.org" "Tasks")
+         "** TODO %?  %^g\nDEADLINE: %^t\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)
+
+        ))
 
 (add-hook! 'elfeed-search-mode-hook #'elfeed-update)
 (add-hook! 'elfeed-search-mode-hook (elfeed-search-set-filter "+unread"))
@@ -173,11 +192,13 @@
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
 
-(setq
-  mu4e-get-mail-command "mbsync -a"    ;; or fetchmail, or ...
-  mu4e-update-interval (* 5 60))        ;; update every 5 minutes
+(after! mu4e
+  (setq mu4e-update-interval (* 5 60)))        ;; update every 5 minutes
 
-(setq mu4e-change-filenames-when-moving t)
+(after! mu4e
+  (setq mu4e-change-filenames-when-moving t))
+
+(setq mu4e-sent-messages-behavior 'delete)
 
 (setq mu4e-maildir "~/.mail")
 (setq mu4e-root-maildir "~/.mail")
@@ -295,10 +316,6 @@
 	message-sendmail-f-is-evil t
 	message-sendmail-extra-arguments '("--read-envelope-from")
 	message-send-mail-function #'message-send-mail-with-sendmail))
-
-;(after! mu4e
-;    :defer 20
-;    mu4e t)
 
 ;(after! org-gcal
 ;  (setq org-gcal-client-id "jonathanp@polymorphic.group"

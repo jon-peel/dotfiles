@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+import os
+import configparser
+from collections import defaultdict
+
+DESKTOP_DIR = "/usr/share/applications"
+MENU_FILE = os.path.expanduser("~/GNUstep/Defaults/WMRootMenu")
+
+def parse_desktop_file(filepath):
+    config = configparser.ConfigParser()
+    try:
+        config.read(filepath, encoding='utf-8')
+        if 'Desktop Entry' not in config:
+            return None
+
+        entry = config['Desktop Entry']
+        if entry.get('NoDisplay', 'false').lower() == 'true':
+            return None
+
+        return {
+            'name': entry.get('Name', ''),
+            'exec': entry.get('Exec', '').split()[0],
+            'categories': entry.get('Categories', '').split(';'),
+            'terminal': entry.get('Terminal', 'false').lower() == 'true'
+        }
+    except:
+        return None
+
+def generate_menu():
+    apps = []
+    for filename in os.listdir(DESKTOP_DIR):
+        if filename.endswith('.desktop'):
+            filepath = os.path.join(DESKTOP_DIR, filename)
+            app = parse_desktop_file(filepath)
+            if app:
+                apps.append(app)
+
+    # Group by category
+    categories = defaultdict(list)
+    for app in apps:
+        found = False
+        for cat in app['categories']:
+            if cat in ['Audio', 'Video', 'Development', 'Graphics',
+                      'Network', 'Office', 'System', 'Utility']:
+                categories[cat].append(app)
+                found = True
+                break
+        if not found:
+            categories['Other'].append(app)
+
+    # Generate menu
+    menu = [
+        '(',
+        '  "Applications" MENU',
+    ]
+
+    for category, apps in sorted(categories.items()):
+        if not apps:
+            continue
+
+        menu.append(f'    ("{category}" MENU')
+        for app in sorted(apps, key=lambda x: x['name'].lower()):
+            cmd = app['exec']
+            if app['terminal']:
+                cmd = f'xterm -e {cmd}'
+            menu.append(f'      ("{app["name"]}" EXEC {cmd})')
+        menu.append('    )')
+
+    menu.extend([
+        '  )',
+        ')'
+    ])
+
+    return '\n'.join(menu)
+
+def main():
+    menu_content = generate_menu()
+    with open(MENU_FILE, 'w') as f:
+        f.write(menu_content)
+
+if __name__ == '__main__':
+    main()

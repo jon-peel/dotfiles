@@ -5,6 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("34cf3305b35e3a8132a0b1bdf2c67623bc2cb05b125f8d7d26bd51fd16d547ec" default))
+ '(mu4e-compose-switch 'window)
  '(package-selected-packages '(ob-typescript))
  '(smtpmail-smtp-server "localhost")
  '(smtpmail-smtp-service 1025))
