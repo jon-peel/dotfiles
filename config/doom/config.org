@@ -299,12 +299,6 @@ Based on GTK theme
         ))
 #+end_src
 
-#+RESULTS:
-| j  | Journal |       |                                         |                    |
-| jj | Journal | entry | (file+olp+datetree journal.org Journal) | * Entry - %<%H:%M> |
-
-
-
 * RSS (elfeed)
 
 #+begin_src emacs-lisp :tangle yes
@@ -349,6 +343,8 @@ Delete sent messages (to not keep drafts)
 #+begin_src emacs-lisp :tangle yes
 (setq mu4e-sent-messages-behavior 'delete)
 #+end_src
+
+
 
 ** Mail and Folders
 
