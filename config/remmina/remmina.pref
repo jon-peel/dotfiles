@@ -34,8 +34,8 @@ view_file_mode=0
 resolutions=640x480,800x600,1024x768,1152x864,1280x960,1400x1050
 keystrokes=Send hello world§hello world\\n
 main_width=600
-main_height=400
-main_maximize=true
+main_height=964
+main_maximize=false
 main_sort_column_id=1
 main_sort_order=0
 expanded_group=
@@ -81,6 +81,7 @@ vte_allow_bold_text=true
 vte_lines=512
 lock_view_passwords=false
 shortcutkey_clipboard=98
+mp_left=false
 
 [ssh_colors]
 background=#d5ccba

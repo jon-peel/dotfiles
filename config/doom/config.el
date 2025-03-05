@@ -193,7 +193,7 @@
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
 
 (after! mu4e
-  (setq mu4e-update-interval (* 5 60)))        ;; update every 5 minutes
+  (setq mu4e-update-interval nil))
 
 (after! mu4e
   (setq mu4e-change-filenames-when-moving t))
